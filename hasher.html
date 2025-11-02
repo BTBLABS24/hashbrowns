@@ -26,8 +26,9 @@ async function processRequest() {
         country: await hashValue(params.get('country') || '')
     };
     
-    // Output as JSON
-    document.body.innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+    // Output ONLY JSON, no HTML tags
+    document.body.textContent = JSON.stringify(result);
+    document.body.style.whiteSpace = 'pre';
 }
 
 // Run on page load
