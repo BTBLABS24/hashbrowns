@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PII Hasher</title>
+</head>
+<body>
+<script>
+async function hashValue(value) {
+    if (!value) return '';
+    const msgBuffer = new TextEncoder().encode(value.toLowerCase().trim());
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function processRequest() {
+    const params = new URLSearchParams(window.location.search);
+    
+    const result = {
+        em: await hashValue(params.get('email') || ''),
+        fn: await hashValue(params.get('name') || ''),
+        ct: await hashValue(params.get('city') || ''),
+        st: await hashValue(params.get('state') || ''),
+        zp: await hashValue(params.get('zip') || ''),
+        country: await hashValue(params.get('country') || '')
+    };
+    
+    // Output as JSON
+    document.body.innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+}
+
+// Run on page load
+if (window.location.search) {
+    processRequest();
+} else {
+    document.body.innerHTML = '<h1>PII Hasher Ready</h1><p>Pass parameters: ?email=test@example.com&name=John</p>';
+}
+</script>
+</body>
+</html>
